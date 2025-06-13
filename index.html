@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Monkey Ascension v0.4</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #fffbea;
+      color: #333;
+      text-align: center;
+      padding: 40px;
+    }
+    .button {
+      font-size: 1em;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    .stats, .tech {
+      margin-top: 20px;
+      border: 2px solid #aaa;
+      padding: 15px;
+      max-width: 450px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #fff6cc;
+      border-radius: 8px;
+    }
+    .log {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #555;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🐒 Monkey Ascension 🐒</h1>
+  <p>Bananas: <span id="bananas">0</span></p>
+
+  <button class="button" onclick="gatherBananas()">🍌 Gather Banana</button>
+
+  <div class="stats">
+    <h3>Monkeys</h3>
+    <p>Basic Monkeys: <span id="monkeys">0</span> (+1/sec each)</p>
+    <button class="button" onclick="buyMonkey()">Buy Monkey (Cost: <span id="monkeyCost">10</span>)</button>
+
+    <p>Farmer Monkeys: <span id="farmerMonkeys">0</span> (+2/sec each)</p>
+    <button class="button" onclick="buyFarmerMonkey()">Buy Farmer Monkey (Cost: <span id="farmerCost">25</span>)</button>
+
+    <p>Scholar Monkeys: <span id="scholarMonkeys">0</span></p>
+    <button class="button" onclick="buyScholarMonkey()">Buy Scholar Monkey (Cost: <span id="scholarCost">50</span>)</button>
+
+    <p>Total Banana Income: <span id="incomePerSecond">0</span> bananas/sec</p>
+  </div>
+
+  <div class="tech" id="techUpgrades" style="display:none;">
+    <h3>Tech Upgrades</h3>
+    <button class="button" id="foragingBtn" onclick="buyTech('foraging')">Loading...</button><br>
+    <button class="button" id="mathBtn" onclick="buyTech('math')">Loading...</button>
+  </div>
+
+  <div class="log" id="logBox">
+    Welcome to the jungle of knowledge...
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
