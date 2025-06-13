@@ -64,6 +64,8 @@
 
   <h1>🐒 Monkey Ascension 🐒</h1>
   <p>Bananas: <span id="bananas">0</span></p>
+  <p>Total Banana Income: <span id="incomePerSecond">0</span> bananas/sec</p>
+      </div>
   <button class="button" onclick="gatherBananas()">🍌 Gather Banana</button>
 
   <div class="container">
@@ -78,10 +80,7 @@
 
         <p>Scholar Monkeys: <span id="scholarMonkeys">0</span></p>
         <button class="button" onclick="buyScholarMonkey()">Buy Scholar Monkey (Cost: <span id="scholarCost">50</span>)</button>
-
-        <p>Total Banana Income: <span id="incomePerSecond">0</span> bananas/sec</p>
-      </div>
-
+        
       <div class="tech" id="techUpgrades" style="display:none;">
         <h3>Tech Upgrades</h3>
         <button class="button" id="foragingBtn" onclick="buyTech('foraging')">Loading...</button><br>
