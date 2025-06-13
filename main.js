@@ -102,16 +102,32 @@ function updateDisplay() {
     `Banana Math (+10% Farmer income) – Level ${math.level} – Cost: ${mathCost} bananas`;
 }
 
+// ⬇️ NEW: Limited log with max 15 messages
 function log(msg) {
   const logBox = document.getElementById("logBox");
-  logBox.innerHTML = msg + "<br>" + logBox.innerHTML;
+  const currentLogs = logBox.innerHTML.trim().split('<br>');
+
+  const timestamp = new Date().toLocaleTimeString();
+  const newMessage = `[${timestamp}] ${msg}`;
+
+  currentLogs.unshift(newMessage); // Add to top
+
+  if (currentLogs.length > 15) {
+    currentLogs.length = 15;
+  }
+
+  logBox.innerHTML = currentLogs.join('<br>');
 }
 
 // Save & Load
 function saveGame() {
-  const state = {bananas, monkeys, farmerMonkeys, scholarMonkeys, monkeyCost, farmerCost, scholarCost, tech};
+  const state = {
+    bananas, monkeys, farmerMonkeys, scholarMonkeys,
+    monkeyCost, farmerCost, scholarCost, tech
+  };
   localStorage.setItem('monkeyAscensionSave', JSON.stringify(state));
 }
+
 function loadGame() {
   const state = JSON.parse(localStorage.getItem('monkeyAscensionSave'));
   if (state) {
@@ -136,7 +152,7 @@ setInterval(() => {
   updateDisplay();
 }, 1000);
 
-window.onload = function() {
+window.onload = function () {
   loadGame();
   updateDisplay();
 }
