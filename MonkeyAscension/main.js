@@ -104,8 +104,10 @@ function updateDisplay() {
 function log(msg) {
   const logBox = document.getElementById("logBox");
   const currentLogs = logBox.innerHTML.trim().split('<br>');
-  const timestamp = new Date().toLocaleTimeString();
-  const newMsg = `[${timestamp}] ${msg}`;
+  // If Want To Add TimeStamp
+  // const timestamp = new Date().toLocaleTimeString();
+  // const newMsg = `[${timestamp}] ${msg}`
+  const newMsg = msg;
 
   currentLogs.unshift(newMsg);
   if (currentLogs.length > 15) currentLogs.length = 15;
