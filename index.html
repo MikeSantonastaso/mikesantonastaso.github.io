@@ -47,16 +47,17 @@
     }
 
     .log {
-      border: 2px solid #aaa;
-      background-color: #f9f9e3;
-      padding: 10px;
-      font-size: 0.9em;
-      color: #444;
-      border-radius: 8px;
-      max-height: 400px;
-      overflow-y: auto;
-      text-align: left;
-    }
+  border: 2px solid #aaa;
+  background-color: #f9f9e3;
+  padding: 10px;
+  font-size: 0.9em;
+  color: #444;
+  border-radius: 8px;
+  text-align: left;
+  overflow: hidden;
+  height: 324px; /* Added fixed height */
+  /* max-height: none; can be removed as height now controls it */
+}
   </style>
 </head>
 <body>
@@ -202,8 +203,10 @@
     function log(msg) {
       const logBox = document.getElementById("logBox");
       const currentLogs = logBox.innerHTML.trim().split('<br>');
-      const timestamp = new Date().toLocaleTimeString();
-      const newMsg = `[${timestamp}] ${msg}`;
+     // un comment to add timestamp
+      // const timestamp = new Date().toLocaleTimeString();
+     // const newMsg = `[${timestamp}] ${msg}`;
+      const newMsg = msg;
 
       currentLogs.unshift(newMsg);
       if (currentLogs.length > 15) currentLogs.length = 15;
