@@ -1,255 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Monkey Ascension v0.5</title>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #fffbea;
-      color: #333;
-      text-align: center;
-      padding: 40px;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Monkey Ascension v0.5</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: #fffbea;
+            color: #333;
+            text-align: center;
+            padding: 40px;
+        }
 
-    .container {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 30px;
-      margin-top: 30px;
-      flex-wrap: wrap;
-    }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
 
-    .left-column {
-      flex: 1 1 400px;
-    }
+        .column {
+            flex: 1;
+            min-width: 280px;
+            max-width: 350px;
+        }
 
-    .right-column {
-      flex: 1 1 300px;
-      max-width: 300px;
-    }
+        .button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
 
-    .button {
-      font-size: 1em;
-      padding: 10px 20px;
-      margin: 10px;
-      cursor: pointer;
-    }
+        .reset-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+        }
+        .reset-button:hover {
+            background-color: #d32f2f;
+        }
 
-    .stats, .tech {
-      margin-top: 20px;
-      border: 2px solid #aaa;
-      padding: 15px;
-      background-color: #fff6cc;
-      border-radius: 8px;
-    }
+        .section-box {
+            margin-top: 20px;
+            border: 2px solid #aaa;
+            padding: 15px;
+            background-color: #fff6cc;
+            border-radius: 8px;
+            text-align: left;
+        }
 
-    .log {
-  border: 2px solid #aaa;
-  background-color: #f9f9e3;
-  padding: 10px;
-  font-size: 0.9em;
-  color: #444;
-  border-radius: 8px;
-  text-align: left;
-  overflow: hidden;
-  height: 324px; /* Added fixed height */
-  /* max-height: none; can be removed as height now controls it */
-}
-  </style>
+        .log {
+            border: 2px solid #aaa;
+            background-color: #f9f9e3;
+            padding: 10px;
+            font-size: 0.9em;
+            color: #444;
+            border-radius: 8px;
+            text-align: left;
+            overflow: hidden;
+            height: 324px;
+        }
+
+        /* --- Tab Navigation Styles --- */
+        .tab-buttons {
+            display: flex; /* Arrange buttons horizontally */
+            justify-content: center; /* Center the buttons */
+            margin-bottom: -2px; /* Pull buttons closer to content to overlap border */
+            border-bottom: 2px solid #aaa; /* Line under the tabs */
+            padding-bottom: 0px; /* Adjust as needed for spacing */
+        }
+
+        .tab-button {
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            border-bottom: none; /* Remove bottom border to blend with content */
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 0.95em;
+            border-radius: 5px 5px 0 0; /* Rounded top corners */
+            margin: 0 2px; /* Small space between buttons */
+            transition: background-color 0.2s, color 0.2s;
+            flex-grow: 1; /* Allow buttons to grow and fill available space */
+            text-align: center;
+            max-width: 150px; /* Limit individual button width */
+            color: #555; /* Default text color */
+        }
+
+        .tab-button:hover:not(.active) { /* Hover only if not active */
+            background-color: #d0d0d0;
+        }
+
+        .tab-button.active {
+            background-color: #fff6cc; /* Matches section-box background */
+            border-top: 2px solid #aaa;
+            border-left: 2px solid #aaa;
+            border-right: 2px solid #aaa;
+            border-bottom: 2px solid #fff6cc; /* Create illusion of flowing into content */
+            color: #333; /* Active text color */
+            font-weight: bold;
+            z-index: 1; /* Bring active tab to front */
+            position: relative; /* Needed for z-index */
+        }
+
+        .tab-content {
+            display: none; /* Hidden by default */
+            border: 2px solid #aaa; /* Matches general section-box border */
+            padding: 15px;
+            background-color: #fff6cc;
+            border-radius: 0 0 8px 8px; /* Rounded bottom corners */
+            text-align: left;
+            margin-top: 0; /* Remove default section-box margin-top */
+        }
+
+        .tab-content.active {
+            display: block; /* Show active content */
+        }
+    </style>
 </head>
 <body>
 
-  <h1>🐒 Monkey Ascension 🐒</h1>
-  <p>Bananas: <span id="bananas">0</span></p>
-  <button class="button" onclick="gatherBananas()">🍌 Gather Banana</button>
+    <h1>🐒 Monkey Ascension 🐒</h1>
+    <button class="button" onclick="gatherBananas()">🍌 Gather Banana</button>
+    <button class="button reset-button" onclick="resetProgress()">⚠️ Reset All Progress</button>
 
-  <div class="container">
-    <div class="left-column">
-      <div class="stats">
-        <h3>Monkeys</h3>
-        <p>Basic Monkeys: <span id="monkeys">0</span> (+1/sec each)</p>
-        <button class="button" onclick="buyMonkey()">Buy Monkey (Cost: <span id="monkeyCost">10</span>)</button>
+    <div class="container">
+        <div class="column">
+            <div class="section-box">
+                <h3>Resources</h3>
+                <p>Bananas: <span id="bananas">0</span></p>
+                <p>Total Banana Income: <span id="incomePerSecond">0</span> bananas/sec</p>
+            </div>
+        </div>
 
-        <p>Farmer Monkeys: <span id="farmerMonkeys">0</span> (+2/sec each)</p>
-        <button class="button" onclick="buyFarmerMonkey()">Buy Farmer Monkey (Cost: <span id="farmerCost">25</span>)</button>
+        <div class="column">
+            <div class="tab-buttons" id="middleColumnTabs">
+                <button class="tab-button active" onclick="openTab(event, 'monkeysTab')">Monkeys</button>
+                <button class="tab-button" id="techTabButton" onclick="openTab(event, 'techTab')" style="display: none;">Tech</button>
+                </div>
 
-        <p>Scholar Monkeys: <span id="scholarMonkeys">0</span></p>
-        <button class="button" onclick="buyScholarMonkey()">Buy Scholar Monkey (Cost: <span id="scholarCost">50</span>)</button>
+            <div id="monkeysTab" class="tab-content active">
+                <h3>Monkeys</h3>
+                <p>Basic Monkeys: <span id="monkeys">0</span> (+1/sec each)</p>
+                <button class="button" onclick="buyMonkey()">Buy Monkey (Cost: <span id="monkeyCost">10</span>)</button>
 
-        <p>Total Banana Income: <span id="incomePerSecond">0</span> bananas/sec</p>
-      </div>
+                <p>Farmer Monkeys: <span id="farmerMonkeys">0</span> (+2/sec each)</p>
+                <button class="button" onclick="buyFarmerMonkey()">Buy Farmer Monkey (Cost: <span id="farmerCost">25</span>)</button>
 
-      <div class="tech" id="techUpgrades" style="display:none;">
-        <h3>Tech Upgrades</h3>
-        <button class="button" id="foragingBtn" onclick="buyTech('foraging')">Loading...</button><br>
-        <button class="button" id="mathBtn" onclick="buyTech('math')">Loading...</button>
-      </div>
+                <p>Scholar Monkeys: <span id="scholarMonkeys">0</span></p>
+                <button class="button" onclick="buyScholarMonkey()">Buy Scholar Monkey (Cost: <span id="scholarCost">50</span>)</button>
+            </div>
+
+            <div id="techTab" class="tab-content">
+                <h3>Tech Upgrades</h3>
+                <button class="button" id="foragingBtn" onclick="buyTech('foraging')">Loading...</button><br>
+                <button class="button" id="mathBtn" onclick="buyTech('math')">Loading...</button>
+            </div>
+            </div>
+
+        <div class="column">
+            <div class="log" id="logBox">
+                Welcome to the jungle of knowledge...
+            </div>
+        </div>
     </div>
 
-    <div class="right-column">
-      <div class="log" id="logBox">
-        Welcome to the jungle of knowledge...
-      </div>
-    </div>
-  </div>
-
-  <script src="main.js">
-    let bananas = 0;
-
-    let monkeys = 0;
-    let farmerMonkeys = 0;
-    let scholarMonkeys = 0;
-
-    let monkeyCost = 10;
-    let farmerCost = 25;
-    let scholarCost = 50;
-
-    let tech = {
-      foraging: { level: 0, baseCost: 100, costMult: 1.5 },
-      math: { level: 0, baseCost: 150, costMult: 1.6 }
-    };
-
-    function gatherBananas() {
-      bananas++;
-      log("You picked a banana! 🍌");
-      updateDisplay();
-    }
-
-    function buyMonkey() {
-      if (bananas >= monkeyCost) {
-        bananas -= monkeyCost;
-        monkeys++;
-        monkeyCost = Math.floor(monkeyCost * 1.3);
-        log("Basic monkey joined you! 🐒");
-        updateDisplay();
-      } else {
-        log("Not enough bananas!");
-      }
-    }
-
-    function buyFarmerMonkey() {
-      if (bananas >= farmerCost) {
-        bananas -= farmerCost;
-        farmerMonkeys++;
-        farmerCost = Math.floor(farmerCost * 1.4);
-        log("Farmer monkey is ready to farm! 👨‍🌾🐵");
-        updateDisplay();
-      } else {
-        log("Not enough bananas!");
-      }
-    }
-
-    function buyScholarMonkey() {
-      if (bananas >= scholarCost) {
-        bananas -= scholarCost;
-        scholarMonkeys++;
-        scholarCost = Math.floor(scholarCost * 1.6);
-        log("A scholar monkey starts thinking... 🧠🐒");
-        document.getElementById("techUpgrades").style.display = "block";
-        updateDisplay();
-      } else {
-        log("Not enough bananas!");
-      }
-    }
-
-    function buyTech(type) {
-      const upgrade = tech[type];
-      const currentLevel = upgrade.level;
-      const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMult, currentLevel));
-      if (bananas >= cost) {
-        bananas -= cost;
-        upgrade.level++;
-        log(`Tech upgraded: ${type === "foraging" ? "Efficient Foraging" : "Banana Math"} (Level ${upgrade.level})`);
-      } else {
-        log("Not enough bananas for tech upgrade!");
-      }
-      updateDisplay();
-    }
-
-    function getBananasPerSecond() {
-      let income = monkeys * 1 + farmerMonkeys * 2;
-      if (tech.foraging.level > 0) {
-        income *= (1 + 0.05 * tech.foraging.level);
-      }
-      if (tech.math.level > 0) {
-        income += farmerMonkeys * (0.2 * tech.math.level);
-      }
-      return income;
-    }
-
-    function updateDisplay() {
-      document.getElementById("bananas").innerText = Math.floor(bananas).toLocaleString();
-      document.getElementById("monkeys").innerText = monkeys;
-      document.getElementById("farmerMonkeys").innerText = farmerMonkeys;
-      document.getElementById("scholarMonkeys").innerText = scholarMonkeys;
-      document.getElementById("monkeyCost").innerText = monkeyCost;
-      document.getElementById("farmerCost").innerText = farmerCost;
-      document.getElementById("scholarCost").innerText = scholarCost;
-      document.getElementById("incomePerSecond").innerText = getBananasPerSecond().toFixed(2);
-
-      const forage = tech.foraging;
-      const math = tech.math;
-      const forageCost = Math.floor(forage.baseCost * Math.pow(forage.costMult, forage.level));
-      const mathCost = Math.floor(math.baseCost * Math.pow(math.costMult, math.level));
-      document.getElementById("foragingBtn").innerText =
-        `Efficient Foraging (+5% income) – Level ${forage.level} – Cost: ${forageCost} bananas`;
-      document.getElementById("mathBtn").innerText =
-        `Banana Math (+10% Farmer income) – Level ${math.level} – Cost: ${mathCost} bananas`;
-    }
-
-    function log(msg) {
-      const logBox = document.getElementById("logBox");
-      const currentLogs = logBox.innerHTML.trim().split('<br>');
-     // un comment to add timestamp
-      // const timestamp = new Date().toLocaleTimeString();
-     // const newMsg = `[${timestamp}] ${msg}`;
-      const newMsg = msg;
-
-      currentLogs.unshift(newMsg);
-      if (currentLogs.length > 15) currentLogs.length = 15;
-
-      logBox.innerHTML = currentLogs.join('<br>');
-    }
-
-    function saveGame() {
-      const state = {
-        bananas, monkeys, farmerMonkeys, scholarMonkeys,
-        monkeyCost, farmerCost, scholarCost, tech
-      };
-      localStorage.setItem('monkeyAscensionSave', JSON.stringify(state));
-    }
-
-    function loadGame() {
-      const state = JSON.parse(localStorage.getItem('monkeyAscensionSave'));
-      if (state) {
-        bananas = state.bananas;
-        monkeys = state.monkeys;
-        farmerMonkeys = state.farmerMonkeys;
-        scholarMonkeys = state.scholarMonkeys;
-        monkeyCost = state.monkeyCost;
-        farmerCost = state.farmerCost;
-        scholarCost = state.scholarCost;
-        tech = state.tech;
-        if (scholarMonkeys > 0) {
-          document.getElementById("techUpgrades").style.display = "block";
-        }
-      }
-    }
-
-    setInterval(saveGame, 5000);
-
-    setInterval(() => {
-      bananas += getBananasPerSecond();
-      updateDisplay();
-    }, 1000);
-
-    window.onload = function () {
-      loadGame();
-      updateDisplay();
-    };
-  </script>
+    <script src="main.js"></script>
 </body>
 </html>
