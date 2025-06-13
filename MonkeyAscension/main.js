@@ -13,6 +13,28 @@ let tech = {
   math: { level: 0, baseCost: 150, costMult: 1.6 }
 };
 
+// --- Tab Navigation Functions ---
+function openTab(evt, tabName) {
+    // Declare all variables
+    let i, tabcontent, tabbuttons;
+
+    // Get all elements with class="tab-content" and hide them
+    tabcontent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].classList.remove("active");
+    }
+
+    // Get all elements with class="tab-button" and remove the "active" class
+    tabbuttons = document.getElementsByClassName("tab-button");
+    for (i = 0; i < tabbuttons.length; i++) {
+        tabbuttons[i].classList.remove("active");
+    }
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabName).classList.add("active");
+    evt.currentTarget.classList.add("active");
+}
+
 function gatherBananas() {
   bananas++;
   log("You picked a banana! 🍌");
@@ -49,7 +71,12 @@ function buyScholarMonkey() {
     scholarMonkeys++;
     scholarCost = Math.floor(scholarCost * 1.6);
     log("A scholar monkey starts thinking... 🧠🐒");
-    document.getElementById("techUpgrades").style.display = "block";
+    // When Scholar Monkey is bought, reveal the Tech tab button
+    document.getElementById("techTabButton").style.display = "block";
+    // Optionally, automatically switch to the Tech tab
+    // We'll simulate a click event to activate the tab
+    const techTabButton = document.getElementById("techTabButton");
+    openTab({ currentTarget: techTabButton }, 'techTab'); // Use 'techTab'
     updateDisplay();
   } else {
     log("Not enough bananas!");
@@ -104,15 +131,41 @@ function updateDisplay() {
 function log(msg) {
   const logBox = document.getElementById("logBox");
   const currentLogs = logBox.innerHTML.trim().split('<br>');
-  // If Want To Add TimeStamp
-  // const timestamp = new Date().toLocaleTimeString();
-  // const newMsg = `[${timestamp}] ${msg}`
   const newMsg = msg;
 
   currentLogs.unshift(newMsg);
   if (currentLogs.length > 15) currentLogs.length = 15;
 
   logBox.innerHTML = currentLogs.join('<br>');
+}
+
+// Function to reset all game progress
+function resetProgress() {
+  if (confirm("Are you sure you want to reset all progress? This cannot be undone!")) {
+    localStorage.removeItem('monkeyAscensionSave'); // Clear saved game
+    // Reset all game variables to their initial state
+    bananas = 0;
+    monkeys = 0;
+    farmerMonkeys = 0;
+    scholarMonkeys = 0;
+    monkeyCost = 10;
+    farmerCost = 25;
+    scholarCost = 50;
+    tech = {
+      foraging: { level: 0, baseCost: 100, costMult: 1.5 },
+      math: { level: 0, baseCost: 150, costMult: 1.6 }
+    };
+
+    // Reset tab visibility and active state
+    document.getElementById("techTabButton").style.display = "none"; // Hide tech tab button
+    // Ensure "Monkeys" tab is active and visible content
+    // Find the first tab button (Monkeys) and simulate a click
+    const monkeysTabButton = document.querySelector('.tab-button[onclick*="monkeysTab"]');
+    openTab({ currentTarget: monkeysTabButton }, 'monkeysTab');
+
+    log("Game progress has been reset!"); // Log the reset
+    updateDisplay(); // Update display to show reset values
+  }
 }
 
 // Save & Load
@@ -125,7 +178,9 @@ function saveGame() {
     monkeyCost,
     farmerCost,
     scholarCost,
-    tech
+    tech,
+    // Save current active tab so it can be restored on load
+    activeTab: document.querySelector('.tab-content.active')?.id || 'monkeysTab'
   };
   localStorage.setItem('monkeyAscensionSave', JSON.stringify(state));
 }
@@ -141,8 +196,31 @@ function loadGame() {
     farmerCost = state.farmerCost;
     scholarCost = state.scholarCost;
     tech = state.tech;
+
+    // Restore tech tab button visibility
     if (scholarMonkeys > 0) {
-      document.getElementById("techUpgrades").style.display = "block";
+      document.getElementById("techTabButton").style.display = "block";
+    }
+
+    // Restore active tab
+    const initialTab = state.activeTab || 'monkeysTab';
+    const initialTabButton = document.querySelector(`.tab-button[onclick*="'${initialTab}'"]`);
+
+    if (initialTabButton) {
+        // We simulate the event object for openTab
+        openTab({ currentTarget: initialTabButton }, initialTab);
+    } else {
+        // Fallback to default if somehow the saved tab button doesn't exist
+        const defaultTabButton = document.querySelector('.tab-button[onclick*="monkeysTab"]');
+        if (defaultTabButton) {
+            openTab({ currentTarget: defaultTabButton }, 'monkeysTab');
+        }
+    }
+  } else {
+    // If no save data, ensure the default "Monkeys" tab is active initially
+    const defaultTabButton = document.querySelector('.tab-button[onclick*="monkeysTab"]');
+    if (defaultTabButton) {
+        openTab({ currentTarget: defaultTabButton }, 'monkeysTab');
     }
   }
 }
@@ -155,6 +233,6 @@ setInterval(() => {
 }, 1000);
 
 window.onload = function () {
-  loadGame();
+  loadGame(); // This will also handle setting the initial tab via loadGame()
   updateDisplay();
 };
