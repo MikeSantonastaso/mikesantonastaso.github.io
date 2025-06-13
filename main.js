@@ -104,15 +104,34 @@ function updateDisplay() {
 function log(msg) {
   const logBox = document.getElementById("logBox");
   const currentLogs = logBox.innerHTML.trim().split('<br>');
-  // If Want To Add TimeStamp
-  // const timestamp = new Date().toLocaleTimeString();
-  // const newMsg = `[${timestamp}] ${msg}`
   const newMsg = msg;
 
   currentLogs.unshift(newMsg);
   if (currentLogs.length > 15) currentLogs.length = 15;
 
   logBox.innerHTML = currentLogs.join('<br>');
+}
+
+// Function to reset all game progress
+function resetProgress() {
+  if (confirm("Are you sure you want to reset all progress? This cannot be undone!")) {
+    localStorage.removeItem('monkeyAscensionSave'); // Clear saved game
+    // Reset all game variables to their initial state
+    bananas = 0;
+    monkeys = 0;
+    farmerMonkeys = 0;
+    scholarMonkeys = 0;
+    monkeyCost = 10;
+    farmerCost = 25;
+    scholarCost = 50;
+    tech = {
+      foraging: { level: 0, baseCost: 100, costMult: 1.5 },
+      math: { level: 0, baseCost: 150, costMult: 1.6 }
+    };
+    document.getElementById("techUpgrades").style.display = "none"; // Hide tech upgrades
+    log("Game progress has been reset!"); // Log the reset
+    updateDisplay(); // Update display to show reset values
+  }
 }
 
 // Save & Load
