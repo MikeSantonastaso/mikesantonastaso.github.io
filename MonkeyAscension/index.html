@@ -1,1 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Monkey Ascension v0.5</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: #fffbea;
+            color: #333;
+            text-align: center;
+            padding: 40px;
+        }
 
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 380px; /* Increased min-width to give more room for buttons */
+            /* No max-width on columns to allow them to expand as needed by content */
+        }
+
+        /* General button styles - now mostly for reset button & default inheritances */
+        .button {
+            font-size: 1em;
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border: 1px solid #aaa;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            min-height: 40px; /* Consistent height */
+            line-height: 1.2;
+            white-space: nowrap; /* Prevent text wrapping */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Add ellipsis for overflow */
+            box-sizing: border-box; /* Include padding and border in sizing */
+            display: inline-block; /* Default display */
+            vertical-align: middle; /* Helps align with other inline elements */
+            text-align: center; /* Default text alignment */
+        }
+
+        .button:hover {
+            background-color: #e0e0e0;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .button:active {
+            background-color: #d0d0d0;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .reset-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .reset-button:hover {
+            background-color: #d32f2f;
+        }
+
+        .section-box {
+            margin-top: 20px;
+            border: 2px solid #aaa;
+            padding: 15px;
+            background-color: #fff6cc;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .log {
+            border: 2px solid #aaa;
+            background-color: #f9f9e3;
+            padding: 10px;
+            font-size: 0.9em;
+            color: #444;
+            border-radius: 8px;
+            text-align: left;
+            overflow: hidden;
+            height: 324px;
+        }
+
+        /* --- Tab Navigation Styles --- */
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: -2px;
+            border-bottom: 2px solid #aaa;
+            padding-bottom: 0px;
+        }
+
+        .tab-button {
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 0.95em;
+            border-radius: 5px 5px 0 0;
+            margin: 0 2px;
+            transition: background-color 0.2s, color 0.2s;
+            flex-grow: 1;
+            text-align: center;
+            max-width: 150px;
+            color: #555;
+        }
+
+        .tab-button:hover:not(.active) {
+            background-color: #d0d0d0;
+        }
+
+        .tab-button.active {
+            background-color: #fff6cc;
+            border-top: 2px solid #aaa;
+            border-left: 2px solid #aaa;
+            border-right: 2px solid #aaa;
+            border-bottom: 2px solid #fff6cc;
+            color: #333;
+            font-weight: bold;
+            z-index: 1;
+            position: relative;
+        }
+
+        .tab-content {
+            display: none;
+            border: 2px solid #aaa;
+            padding: 15px;
+            background-color: #fff6cc;
+            border-radius: 0 0 8px 8px;
+            text-align: left;
+            margin-top: 0;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* --- The Pit Specific Styles (2-column grid) --- */
+        #thePitTab .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        #thePitTab h3 {
+            text-align: center;
+        }
+
+        /* --- Item Row Styles (general) --- */
+        .item-row {
+            display: flex;
+            align-items: center; /* Vertically align content */
+            background-color: #f9f9e3;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            min-height: 40px; /* Consistent row height */
+            box-sizing: border-box;
+            overflow: hidden; /* For rounded corners of inner buttons */
+            padding: 0; /* No padding on item-row itself */
+        }
+
+        /* Main button for item (Gather or Buy) that takes most of the space */
+        .main-item-button {
+            flex-grow: 1; /* Allow it to take up remaining space */
+            text-align: left; /* Text aligns to the left */
+            font-weight: bold;
+            padding: 8px 10px; /* Padding for the content inside this button */
+            cursor: pointer;
+            border: none; /* No individual border, item-row provides it */
+            background-color: transparent; /* Background of item-row provides color */
+            border-radius: 0; /* No individual border-radius */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 40px; /* Match item-row height */
+            line-height: 1.2;
+            display: flex; /* For icon and text alignment */
+            align-items: center;
+            gap: 5px; /* Space between icon and text */
+            box-sizing: border-box;
+        }
+        .main-item-button:hover {
+            background-color: #e0e0e0; /* Lighter hover for the main clickable area */
+        }
+
+        /* Span for quantity like (0) */
+        .item-quantity {
+            margin-left: 5px;
+            font-weight: bold;
+            flex-shrink: 0; /* Prevent from shrinking */
+        }
+
+        /* Sell button (small fixed width on the right) */
+        .sell-button {
+            background-color: #ffcccc; /* Light red for sell */
+            border-left: 1px solid #aaa; /* Separator from main button */
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            width: 50px; /* Fixed width for sell button */
+            height: 100%; /* Fill parent item-row height */
+            margin: 0; /* Remove default margin */
+            padding: 8px 5px; /* Reduced padding for fixed width */
+            font-size: 0.85em; /* Smaller font for "Sell" */
+            flex-shrink: 0; /* Prevent shrinking */
+            display: flex; /* Use flex for centering "Sell" text */
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .sell-button:hover {
+            background-color: #ffaaaa;
+        }
+
+        /* Allocation +/- buttons (for Troop tab) */
+        .allocation-button-group {
+            display: flex;
+            height: 100%;
+            margin-left: auto; /* Push to the right, similar to sell button positioning */
+            flex-shrink: 0;
+            border: 1px solid #aaa; /* Combined border for the group */
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .allocation-button-group .button {
+            background-color: #e0e0e0;
+            margin: 0;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            min-height: auto;
+            height: 100%;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+            display: flex; /* Keep content centered */
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .allocation-button-group .button:hover {
+            background-color: #d0d0d0;
+        }
+        .allocation-button-group .button:active {
+            background-color: #c0c0c0;
+        }
+        .allocation-button-group .button + .button {
+            border-left: 1px solid #aaa; /* Separator between + and - */
+        }
+
+        /* Clear button - it's a standalone .button */
+        .clear-button {
+            width: calc(100% - 20px);
+            margin-top: 15px;
+            background-color: #f0f0f0;
+        }
+
+        /* Unified Tooltip Styling */
+        .game-tooltip {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            white-space: pre-wrap; /* Allows for newlines */
+            z-index: 10;
+            pointer-events: none; /* Allows mouse to pass through to elements beneath */
+            max-width: 250px; /* Limit width */
+            text-align: left;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            border: 1px solid #555;
+        }
+
+
+        /* --- Troop Tab Specific Styles --- */
+        #troopTab {
+            padding: 10px;
+            text-align: center;
+        }
+        #troopTab h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .free-monkeys-display {
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🐒 Monkey Ascension 🐒</h1>
+    <button class="button reset-button" onclick="resetProgress()">⚠️ Reset All Progress</button>
+
+    <div class="container">
+        <div class="column">
+            <div class="section-box">
+                <h3>Resources</h3>
+                <p>Bananas: <span id="bananas">0</span>/<span id="bananaCapacity">5000</span> <span id="netBananas">0</span>/sec</p>
+                <p>Wood: <span id="wood">0</span>/<span id="woodCapacity">5000</span> <span id="netWood">0</span>/sec</p>
+                <p>Creativity: <span id="creativity">0</span>/<span id="creativityCapacity">1000</span> <span id="netCreativity">0</span>/sec</p>
+                <p>Ore: <span id="ore">0</span>/<span id="oreCapacity">1000</span> <span id="netOre">0</span>/sec</p>
+                <p>Monkeys: <span id="totalMonkeys">0</span></p>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="tab-buttons" id="middleColumnTabs">
+                <button class="tab-button active" onclick="openTab(event, 'thePitTab')">The Pit</button>
+                <button class="tab-button" onclick="openTab(event, 'troopTab')">Troop</button>
+                <button class="tab-button" id="techTabButton" onclick="openTab(event, 'techTab')" style="display: none;">Tech</button>
+            </div>
+
+            <div id="thePitTab" class="tab-content active">
+                <h3>The Pit</h3>
+                <div class="content-grid">
+                    <div class="item-row">
+                        <button class="button main-item-button" onclick="gatherBananas()"
+                                onmouseover="showGatherTooltip('banana')" onmouseout="hideTooltip()">🍌 Gather Banana</button>
+                    </div>
+                    <div class="item-row">
+                        <button class="button main-item-button"
+                                onclick="buyBuilding('bananaGrove')"
+                                onmouseover="showBuildingCost('bananaGrove')" onmouseout="hideTooltip()">
+                            🌿 Banana Grove<span class="item-quantity" id="bananaGroves">(0)</span>
+                        </button>
+                        <button class="button sell-button"
+                                onclick="sellBuilding('bananaGrove')"
+                                onmouseover="showBuildingSellPrice('bananaGrove')" onmouseout="hideTooltip()">Sell</button>
+                    </div>
+                    <div class="item-row">
+                        <button class="button main-item-button" onclick="gatherWood()"
+                                onmouseover="showGatherTooltip('wood')" onmouseout="hideTooltip()">🪵 Gather Wood</button>
+                    </div>
+                    <div class="item-row">
+                        <button class="button main-item-button"
+                                onclick="buyBuilding('treeHut')"
+                                onmouseover="showBuildingCost('treeHut')" onmouseout="hideTooltip()">
+                            🌳 Tree Hut<span class="item-quantity" id="treeHuts">(0)</span>
+                        </button>
+                        <button class="button sell-button"
+                                onclick="sellBuilding('treeHut')"
+                                onmouseover="showBuildingSellPrice('treeHut')" onmouseout="hideTooltip()">Sell</button>
+                    </div>
+                </div> </div>
+
+            <div id="troopTab" class="tab-content">
+                <h3>Jobs</h3>
+                <p class="free-monkeys-display">Free Monkeys: <span id="unallocatedMonkeys">0</span> / <span id="totalAllocatedMonkeys">0</span></p>
+
+                <div class="item-row">
+                    <button class="button main-item-button" onclick="allocateMonkey('forager', 1)" disabled
+                            onmouseover="showJobTooltip('forager')" onmouseout="hideTooltip()">
+                        Forager <span id="allocatedForagers" class="item-quantity">(0)</span>
+                    </button>
+                    <div class="allocation-button-group">
+                        <button class="button allocation-action" onclick="allocateMonkey('forager', 1)">+</button>
+                        <button class="button allocation-action" onclick="allocateMonkey('forager', -1)">-</button>
+                    </div>
+                </div>
+
+                <div class="item-row">
+                    <button class="button main-item-button" onclick="allocateMonkey('woodcutter', 1)" disabled
+                            onmouseover="showJobTooltip('woodcutter')" onmouseout="hideTooltip()">
+                        Woodcutter <span id="allocatedWoodcutters" class="item-quantity">(0)</span>
+                    </button>
+                    <div class="allocation-button-group">
+                        <button class="button allocation-action" onclick="allocateMonkey('woodcutter', 1)">+</button>
+                        <button class="button allocation-action" onclick="allocateMonkey('woodcutter', -1)">-</button>
+                    </div>
+                </div>
+
+                <div class="item-row">
+                    <button class="button main-item-button" onclick="allocateMonkey('scholar', 1)" disabled
+                            onmouseover="showJobTooltip('scholar')" onmouseout="hideTooltip()">
+                        Scholar <span id="allocatedScholars" class="item-quantity">(0)</span>
+                    </button>
+                    <div class="allocation-button-group">
+                        <button class="button allocation-action" onclick="allocateMonkey('scholar', 1)">+</button>
+                        <button class="button allocation-action" onclick="allocateMonkey('scholar', -1)">-</button>
+                    </div>
+                </div>
+
+                <div class="item-row">
+                    <button class="button main-item-button" onclick="allocateMonkey('miner', 1)" disabled
+                            onmouseover="showJobTooltip('miner')" onmouseout="hideTooltip()">
+                        Miner <span id="allocatedMiners" class="item-quantity">(0)</span>
+                    </button>
+                    <div class="allocation-button-group">
+                        <button class="button allocation-action" onclick="allocateMonkey('miner', 1)">+</button>
+                        <button class="button allocation-action" onclick="allocateMonkey('miner', -1)">-</button>
+                    </div>
+                </div>
+
+                <button class="button clear-button" onclick="clearAllocations()">Clear All Allocations</button>
+            </div>
+
+            <div id="techTab" class="tab-content">
+                <h3>Tech Upgrades</h3>
+                <button class="button" id="foragingBtn" onclick="buyTech('foraging')">Loading...</button><br>
+                <button class="button" id="mathBtn" onclick="buyTech('math')">Loading...</button>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="log" id="logBox">
+                Welcome to the jungle of knowledge...
+            </div>
+        </div>
+    </div>
+
+    <div id="gameTooltip" class="game-tooltip"></div>
+
+    <script src="main.js"></script>
+</body>
+</html>
