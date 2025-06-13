@@ -91,7 +91,6 @@ function updateDisplay() {
   document.getElementById("scholarCost").innerText = scholarCost;
   document.getElementById("incomePerSecond").innerText = getBananasPerSecond().toFixed(2);
 
-  // Update tech upgrade buttons with cost + level
   const forage = tech.foraging;
   const math = tech.math;
   const forageCost = Math.floor(forage.baseCost * Math.pow(forage.costMult, forage.level));
@@ -102,19 +101,14 @@ function updateDisplay() {
     `Banana Math (+10% Farmer income) – Level ${math.level} – Cost: ${mathCost} bananas`;
 }
 
-// ⬇️ NEW: Limited log with max 15 messages
 function log(msg) {
   const logBox = document.getElementById("logBox");
   const currentLogs = logBox.innerHTML.trim().split('<br>');
-
   const timestamp = new Date().toLocaleTimeString();
-  const newMessage = `[${timestamp}] ${msg}`;
+  const newMsg = `[${timestamp}] ${msg}`;
 
-  currentLogs.unshift(newMessage); // Add to top
-
-  if (currentLogs.length > 15) {
-    currentLogs.length = 15;
-  }
+  currentLogs.unshift(newMsg);
+  if (currentLogs.length > 15) currentLogs.length = 15;
 
   logBox.innerHTML = currentLogs.join('<br>');
 }
@@ -122,8 +116,14 @@ function log(msg) {
 // Save & Load
 function saveGame() {
   const state = {
-    bananas, monkeys, farmerMonkeys, scholarMonkeys,
-    monkeyCost, farmerCost, scholarCost, tech
+    bananas,
+    monkeys,
+    farmerMonkeys,
+    scholarMonkeys,
+    monkeyCost,
+    farmerCost,
+    scholarCost,
+    tech
   };
   localStorage.setItem('monkeyAscensionSave', JSON.stringify(state));
 }
@@ -144,9 +144,9 @@ function loadGame() {
     }
   }
 }
+
 setInterval(saveGame, 5000);
 
-// Passive banana gain
 setInterval(() => {
   bananas += getBananasPerSecond();
   updateDisplay();
@@ -155,4 +155,4 @@ setInterval(() => {
 window.onload = function () {
   loadGame();
   updateDisplay();
-}
+};
